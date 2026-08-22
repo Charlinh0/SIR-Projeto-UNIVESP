@@ -1,13 +1,61 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Detalhe do Detento</title>
-</head>
-<body>
-    <h1>{{ detento.nome }}</h1>
-    <p>Processo: {{ detento.processo }}</p>
-    <p>Pena total: {{ detento.pena_total_dias }} dias</p>
-    <p>Dias remidos: {{ dias_remidos }}</p>
-    <p>Pena restante: {{ pena_restante }} dias</p>
-</body>
-</html>
+{% extends 'detentos/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-10 col-lg-8">
+        
+        <!-- Cartão Principal da Ficha -->
+        <div class="card shadow-sm border-info">
+            
+            <!-- Cabeçalho Azul com botão de voltar -->
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Ficha do Detento</h4>
+                <a href="{% url 'lista_detentos' %}" class="btn btn-sm btn-light shadow-sm">
+                    Voltar para a Lista
+                </a>
+            </div>
+            
+            <div class="card-body p-5">
+                <h2 class="card-title text-center mb-5">{{ detento.nome }}</h2>
+                
+                <!-- Grade dividindo as 5 informações dinamicamente (sem estourar o limite de 12) -->
+                <div class="row text-center mb-4">
+
+                    <div class="col-md mb-3">
+                        <p class="text-muted mb-1">Nº do Processo</p>
+                        <h5>{{ detento.processo }}</h5>
+                    </div>
+
+                    <div class="col-md mb-3">
+                        <p class="text-muted mb-1">Regime</p>
+                        <h5 class="text-primary">{{ detento.get_regime_display }}</h5>
+                    </div>
+
+                    <div class="col-md mb-3">
+                        <p class="text-muted mb-1">Pena Total</p>
+                        <h5>{{ detento.pena_total_dias }} dias</h5>
+                    </div>
+
+                    <div class="col-md mb-3">
+                        <p class="text-muted mb-1">Dias Remidos</p>
+                        <h5 class="text-success fw-bold">+ {{ dias_remidos }}</h5>
+                    </div>
+
+                    <div class="col-md mb-3">
+                        <p class="text-muted mb-1">Pena Restante</p>
+                        <h5 class="text-danger fw-bold">{{ pena_restante }} dias</h5>
+                    </div>
+
+                </div>
+
+                <hr class="text-muted">
+                
+                <div class="text-center mt-3">
+                    <small class="text-muted">Cadastro inicial: {{ detento.data_inicio|date:"d/m/Y" }}</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

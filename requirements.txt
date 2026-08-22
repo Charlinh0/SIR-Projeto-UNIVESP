@@ -2,6 +2,6 @@ Django==4.2.11
 django-cpf-cnpj==1.0.0
 django-extensions==3.2.3
 django-widget-tweaks==1.4.12
-psycopg2-binary==2.9.10
+psycopg2-binary
 asgiref==3.7.2
 sqlparse==0.4.4

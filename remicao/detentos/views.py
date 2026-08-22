@@ -10,20 +10,23 @@ def home(request):
 
 # FUNÇÃO AUXILIAR (SEM decorator)
 def calcular_remicao(detento):
-
-    dias_remidos = 0
+    total_dias_trabalhados = 0
+    total_horas_estudo = 0
+    total_livros_lidos = 0
 
     for atividade in detento.atividades.all():
-
         if atividade.tipo == 'TRABALHO':
-            dias_remidos += atividade.quantidade // 3
-
+            total_dias_trabalhados += atividade.quantidade
         elif atividade.tipo == 'ESTUDO':
-            dias_remidos += atividade.quantidade // 12
-
+            total_horas_estudo += atividade.quantidade
         elif atividade.tipo == 'LEITURA':
-            dias_remidos += atividade.quantidade // 4
+            total_livros_lidos += atividade.quantidade
 
+    remicao_trabalho = total_dias_trabalhados // 3
+    remicao_estudo = total_horas_estudo // 12
+    remicao_leitura = total_livros_lidos * 4
+
+    dias_remidos = remicao_trabalho + remicao_estudo + remicao_leitura
     pena_restante = detento.pena_total_dias - dias_remidos
 
     return dias_remidos, pena_restante

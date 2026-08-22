@@ -4,10 +4,21 @@
 from django.db import models
 
 class Detento(models.Model):
+    REGIMES = [
+        ('FECHADO', 'Fechado'),
+        ('SEMIABERTO', 'Semiaberto'),
+        ('ABERTO', 'Aberto'),
+    ]
     nome = models.CharField(max_length=200)
     processo = models.CharField(max_length=50)
     pena_total_dias = models.IntegerField()
     data_inicio = models.DateField()
+    regime = models.CharField(
+        max_length=15,
+        choices=REGIMES,
+        error_messages={'blank': 'Atenção: Insira o regime do detento!',
+                        'required': 'Atenção: Insira o regime do detento!'}
+    )
 
     def __str__(self):
         return self.nome
