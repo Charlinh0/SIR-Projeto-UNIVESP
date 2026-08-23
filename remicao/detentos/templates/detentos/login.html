@@ -1,0 +1,34 @@
+{% extends 'detentos/base.html' %}
+
+{% block content %}
+<!-- Caixa compacta centralizada (400px de largura máxima) -->
+<div class="w-100 border border-white rounded-4 p-5 bg-black mx-auto shadow" style="max-width: 400px;">
+    
+    <div class="text-center mb-4">
+        <h2 class="fw-bold">Acesso Restrito</h2>
+        <p class="text-secondary small">Faça login para continuar</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="id_username" class="form-label text-light fw-bold">Usuário:</label>
+            <input type="text" name="username" class="form-control bg-dark text-white border-secondary" id="id_username" required autofocus>
+        </div>
+        
+        <div class="mb-4">
+            <label for="id_password" class="form-label text-light fw-bold">Senha:</label>
+            <input type="password" name="password" class="form-control bg-dark text-white border-secondary" id="id_password" required>
+        </div>
+        
+        <!-- O input 'next' garante que o usuário seja redirecionado para a página que ele tentou acessar antes de logar -->
+        <input type="hidden" name="next" value="{{ next }}">
+        
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-primary fw-bold py-2">Entrar</button>
+        </div>
+    </form>
+    
+</div>
+{% endblock %}
