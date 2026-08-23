@@ -1,46 +1,18 @@
 {% extends 'detentos/base.html' %}
 
-
 {% block content %}
+<!-- A caixa inteligente sem o w-100 -->
+<div class="border border-white rounded-4 p-5 bg-black text-center shadow">
 
-<div class="text-center">
+    <h1 class="mb-3 fw-bold">Bem-vindo ao Sistema</h1>
+    <p class="mb-4 text-light">Sistema desenvolvido para controle de remição de pena.</p>
 
-<h1>
-
-Bem-vindo ao Sistema
-
-</h1>
-
-
-<p>
-
-Sistema desenvolvido para controle de remição de pena.
-
-</p>
-
-
-<a href="/detentos/" class="btn btn-primary">
-
-Lista de Detentos
-
-</a>
-
-
-<a href="/consulta/" class="btn btn-success">
-
-Consultar
-
-</a>
-
-
-<a href="/admin/" class="btn btn-secondary">
-
-Área Administrativa
-
-</a>
-
+    <!-- Grupo de botões centralizados e espaçados -->
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <a href="/detentos/" class="btn btn-primary px-4">Lista de Detentos</a>
+        <a href="/consulta/" class="btn btn-success px-4">Consultar</a>
+        <a href="/admin/" class="btn btn-secondary px-4">Área Administrativa</a>
+    </div>
 
 </div>
-
-
 {% endblock %}

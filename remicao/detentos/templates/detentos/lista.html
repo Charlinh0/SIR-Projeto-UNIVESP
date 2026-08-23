@@ -1,9 +1,11 @@
 {% extends 'detentos/base.html' %}
 
 {% block content %}
-<div class="row mt-4">
+<!-- Colocamos w-100 para garantir que ocupe a tela toda e aplicamos a nossa borda branca -->
+<div class="w-100 border border-white rounded-4 p-4 bg-black">
+
     <div class="col-12">
-        
+
         <!-- Cabeçalho com o Título e o Botão de Consulta -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Resumo de Remição de Pena</h2>
@@ -12,43 +14,36 @@
             </a>
         </div>
 
-        <!-- Cartão que guarda a Tabela -->
-        <div class="card shadow-sm">
-            <div class="card-body p-0">
-                
-                <!-- Tabela Responsiva do Bootstrap -->
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Nome</th>
-                                <th>Processo</th>
-                                <th>Pena Total</th>
-                                <th>Dias Remidos</th>
-                                <th>Pena Restante</th>
-                                <th class="text-center">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for item in dados %}
-                            <tr>
-                                <td><strong>{{ item.detento.nome }}</strong></td>
-                                <td>{{ item.detento.processo }}</td>
-                                <td>{{ item.detento.pena_total_dias }} dias</td>
-                                <td class="text-success fw-bold">{{ item.dias_remidos }} dias</td>
-                                <td class="text-danger fw-bold">{{ item.pena_restante }} dias</td>
-                                <td class="text-center">
-                                    <a href="{% url 'detalhe_detento' item.detento.id %}" class="btn btn-outline-info btn-sm">
-                                        Ver Detalhes
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-
-            </div>
+        <!-- Removemos o .card do Bootstrap e deixamos a tabela solta dentro da nossa caixa -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Processo</th>
+                        <th>Pena Total</th>
+                        <th>Dias Remidos</th>
+                        <th>Pena Restante</th>
+                        <th class="text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in dados %}
+                    <tr>
+                        <td><strong>{{ item.detento.nome }}</strong></td>
+                        <td>{{ item.detento.processo }}</td>
+                        <td>{{ item.detento.pena_total_dias }} dias</td>
+                        <td class="text-success fw-bold">{{ item.dias_remidos }} dias</td>
+                        <td class="text-danger fw-bold">{{ item.pena_restante }} dias</td>
+                        <td class="text-center">
+                            <a href="{% url 'detalhe_detento' item.detento.id %}" class="btn btn-outline-info btn-sm">
+                                Ver Detalhes
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
     </div>
