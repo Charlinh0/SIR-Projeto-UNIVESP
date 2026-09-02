@@ -8,13 +8,23 @@ def home(request):
     return render(request, 'detentos/home.html')
 
 
-# FUNÇÃO AUXILIAR (SEM decorator)
+# detentos/views.py (cálculo de remição)
 def calcular_remicao(detento):
+    """
+    Busca todas as atividades registradas para o detento e calcula os dias remidos:
+    - Trabalho: 1 dia remido para cada 3 dias trabalhados (divisão inteira // 3)
+    - Estudo: 1 dia remido para cada 12 horas de estudo (divisão inteira // 12)
+    - Leitura: 4 dias remidos por livro lido
+    """
     total_dias_trabalhados = 0
     total_horas_estudo = 0
     total_livros_lidos = 0
 
-    for atividade in detento.atividades.all():
+    # 1. Recupera todas as atividades do detento usando a relação ForeignKey (related_name="atividades")
+    atividades = detento.atividades.all()
+
+    # 2. Varre as atividades acumulando as quantidades de acordo com o tipo
+    for atividade in atividades:
         if atividade.tipo == 'TRABALHO':
             total_dias_trabalhados += atividade.quantidade
         elif atividade.tipo == 'ESTUDO':
@@ -22,34 +32,45 @@ def calcular_remicao(detento):
         elif atividade.tipo == 'LEITURA':
             total_livros_lidos += atividade.quantidade
 
-    remicao_trabalho = total_dias_trabalhados // 3
-    remicao_estudo = total_horas_estudo // 12
-    remicao_leitura = total_livros_lidos * 4
+    # 3. Aplica a matemática da LEP
+    dias_remidos_trabalho = total_dias_trabalhados // 3
+    dias_remidos_estudo = total_horas_estudo // 12
+    dias_remidos_leitura = total_livros_lidos * 4
 
-    dias_remidos = remicao_trabalho + remicao_estudo + remicao_leitura
-    pena_restante = detento.pena_total_dias - dias_remidos
+    # 4. Soma tudo para obter o total de dias remidos
+    total_dias_remidos = dias_remidos_trabalho + dias_remidos_estudo + dias_remidos_leitura
 
-    return dias_remidos, pena_restante
+    # 5. Calcula a pena restante (garantindo que nunca seja menor do que zero)
+    pena_restante = max(0, detento.pena_total_dias - total_dias_remidos)
+
+    # Retorna um dicionário estruturado para enviar ao template HTML
+    return {
+        'total_dias_trabalhados': total_dias_trabalhados,
+        'total_horas_estudo': total_horas_estudo,
+        'total_livros_lidos': total_livros_lidos,
+        'dias_remidos_trabalho': dias_remidos_trabalho,
+        'dias_remidos_estudo': dias_remidos_estudo,
+        'dias_remidos_leitura': dias_remidos_leitura,
+        'total_dias_remidos': total_dias_remidos,
+        'pena_restante': pena_restante,
+    }
 
 
 # VIEW lista
 @login_required
 def lista_detentos(request):
-
     detentos = Detento.objects.all()
-
     dados = []
 
     for d in detentos:
+        # Captura o dicionário retornado
+        dados_remicao = calcular_remicao(d)
 
-        dias_remidos, pena_restante = calcular_remicao(d)
-
+        # Extrai os valores específicos do dicionário
         dados.append({
-
             "detento": d,
-            "dias_remidos": dias_remidos,
-            "pena_restante": pena_restante
-
+            "dias_remidos": dados_remicao['total_dias_remidos'],
+            "pena_restante": dados_remicao['pena_restante']
         })
 
     return render(request, "detentos/lista.html", {"dados": dados})
@@ -58,46 +79,40 @@ def lista_detentos(request):
 # VIEW detalhe
 @login_required
 def detalhe_detento(request, detento_id):
-
     detento = get_object_or_404(Detento, pk=detento_id)
 
-    dias_remidos, pena_restante = calcular_remicao(detento)
+    # Captura o dicionário completo
+    dados_remicao = calcular_remicao(detento)
 
+    # Passamos o dicionário 'dados_remicao' inteiro no contexto para que o detalhe.html
+    # possa exibir as parciais (ex: total_dias_trabalhados, dias_remidos_leitura, etc.)
     return render(request, "detentos/detalhe.html", {
-
         "detento": detento,
-        "dias_remidos": dias_remidos,
-        "pena_restante": pena_restante
-
+        "dados_remicao": dados_remicao,
+        "dias_remidos": dados_remicao['total_dias_remidos'],
+        "pena_restante": dados_remicao['pena_restante']
     })
 
 
 # VIEW consulta
 @login_required
 def consulta_detento(request):
-
     resultado = None
 
     if request.method == "POST":
-
         nome = request.POST.get("nome")
-
         try:
-
             detento = Detento.objects.get(nome__iexact=nome)
 
-            dias_remidos, pena_restante = calcular_remicao(detento)
+            # Captura o dicionário do cálculo
+            dados_remicao = calcular_remicao(detento)
 
             resultado = {
-
                 "detento": detento,
-                "dias_remidos": dias_remidos,
-                "pena_restante": pena_restante
-
+                "dias_remidos": dados_remicao['total_dias_remidos'],
+                "pena_restante": dados_remicao['pena_restante']
             }
-
         except Detento.DoesNotExist:
-
             resultado = "Detento não encontrado."
 
     return render(request, "detentos/consulta.html", {"resultado": resultado})
