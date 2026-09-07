@@ -1,6 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Detento
 from django.contrib.auth.decorators import login_required
+from .forms import DocumentoForm
 
 
 # HOME (SEM login obrigatório)
@@ -81,16 +82,26 @@ def lista_detentos(request):
 def detalhe_detento(request, detento_id):
     detento = get_object_or_404(Detento, pk=detento_id)
 
-    # Captura o dicionário completo
-    dados_remicao = calcular_remicao(detento)
+    if request.method == 'POST':
+        form = DocumentoForm(request.POST, request.FILES)
+        if form.is_valid():
+            documento = form.save(commit=False)
+            documento.detento = detento
+            documento.save()
+            return redirect('detalhe_detento', detento_id=detento.id)
+    else:
+        form = DocumentoForm()
 
-    # Passamos o dicionário 'dados_remicao' inteiro no contexto para que o detalhe.html
-    # possa exibir as parciais (ex: total_dias_trabalhados, dias_remidos_leitura, etc.)
+    dados_remicao = calcular_remicao(detento)
+    documentos = detento.documentos.all().order_by('-data_envio')
+
     return render(request, "detentos/detalhe.html", {
         "detento": detento,
         "dados_remicao": dados_remicao,
         "dias_remidos": dados_remicao['total_dias_remidos'],
-        "pena_restante": dados_remicao['pena_restante']
+        "pena_restante": dados_remicao['pena_restante'],
+        "form": form,
+        "documentos": documentos,
     })
 
 

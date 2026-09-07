@@ -54,7 +54,7 @@ class Documento(models.Model):
 
     detento = models.ForeignKey(Detento, on_delete=models.CASCADE, related_name="documentos")
     tipo_documento = models.CharField(max_length=25, choices=TIPOS_DOCUMENTO)
-    arquivo = models.FileField(upload_to='documentos/')
+    arquivo = models.FileField(upload_to='')
     estado_assinatura = models.CharField(
         max_length=15,
         choices=ESTADOS_ASSINATURA,
