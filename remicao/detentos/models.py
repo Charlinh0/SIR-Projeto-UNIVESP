@@ -37,3 +37,30 @@ class Atividade(models.Model):
 
     def __str__(self):
         return f"{self.tipo} - {self.detento.nome}"
+
+
+class Documento(models.Model):
+    TIPOS_DOCUMENTO = [
+        ('ATESTADO_ESTUDO', 'Atestado de Estudo'),
+        ('ATESTADO_TRABALHO', 'Atestado de Trabalho'),
+        ('DOCUMENTO_PROCESSUAL', 'Documento Processual'),
+    ]
+
+    ESTADOS_ASSINATURA = [
+        ('VALIDADO', 'Assinatura Válida (ICP-Brasil)'),
+        ('INVALIDO', 'Assinatura Inválida'),
+        ('SEM_ASSINATURA', 'Sem Assinatura Digital'),
+    ]
+
+    detento = models.ForeignKey(Detento, on_delete=models.CASCADE, related_name="documentos")
+    tipo_documento = models.CharField(max_length=25, choices=TIPOS_DOCUMENTO)
+    arquivo = models.FileField(upload_to='documentos/')
+    estado_assinatura = models.CharField(
+        max_length=15,
+        choices=ESTADOS_ASSINATURA,
+        default='SEM_ASSINATURA'
+    )
+    data_envio = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.tipo_documento} - {self.detento.nome}"

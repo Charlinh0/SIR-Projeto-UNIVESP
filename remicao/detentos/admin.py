@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
-from .models import Detento, Atividade
+from .models import Detento, Atividade, Documento
 
 from django.contrib import admin
 
@@ -20,3 +20,8 @@ class DetentoAdmin(admin.ModelAdmin):
 class AtividadeAdmin(admin.ModelAdmin):
     list_display = ("detento", "tipo", "quantidade", "data_registro")
     list_filter = ("tipo",)
+
+@admin.register(Documento)
+class DocumentoAdmin(admin.ModelAdmin):
+    list_display = ("detento", "tipo_documento", "estado_assinatura", "data_envio")
+    list_filter = ("tipo_documento", "estado_assinatura")
