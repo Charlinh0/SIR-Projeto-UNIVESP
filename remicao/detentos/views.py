@@ -42,7 +42,10 @@ def calcular_remicao(detento):
     total_dias_remidos = dias_remidos_trabalho + dias_remidos_estudo + dias_remidos_leitura
 
     # 5. Calcula a pena restante (garantindo que nunca seja menor do que zero)
-    pena_restante = max(0, detento.pena_total_dias - total_dias_remidos)
+    pena_restante = max(
+        0,
+        detento.pena_total_dias - detento.dias_cumpridos_informados - total_dias_remidos
+    )
 
     # Retorna um dicionário estruturado para enviar ao template HTML
     return {
@@ -53,8 +56,10 @@ def calcular_remicao(detento):
         'dias_remidos_estudo': dias_remidos_estudo,
         'dias_remidos_leitura': dias_remidos_leitura,
         'total_dias_remidos': total_dias_remidos,
+        'dias_cumpridos_informados': detento.dias_cumpridos_informados,
         'pena_restante': pena_restante,
     }
+    
 
 
 # VIEW lista

@@ -12,6 +12,11 @@ class Detento(models.Model):
     nome = models.CharField(max_length=200)
     processo = models.CharField(max_length=50)
     pena_total_dias = models.IntegerField()
+    dias_cumpridos_informados = models.IntegerField(
+        default=0,
+        help_text="Dias já descontados da pena por tempo de cumprimento, conforme "
+                   "informado pela Vara de Execução Penal (fora do escopo de cálculo do SIR)."
+    )
     data_inicio = models.DateField()
     regime = models.CharField(
         max_length=15,
