@@ -55,6 +55,7 @@ class Documento(models.Model):
         ('VALIDADO', 'Assinatura Válida (ICP-Brasil)'),
         ('INVALIDO', 'Assinatura Inválida'),
         ('SEM_ASSINATURA', 'Sem Assinatura Digital'),
+        ('PENDENTE', 'Assinatura Pendente')
     ]
 
     detento = models.ForeignKey(Detento, on_delete=models.CASCADE, related_name="documentos")
@@ -63,7 +64,7 @@ class Documento(models.Model):
     estado_assinatura = models.CharField(
         max_length=15,
         choices=ESTADOS_ASSINATURA,
-        default='SEM_ASSINATURA'
+        default='PENDENTE'
     )
     data_envio = models.DateTimeField(auto_now_add=True)
 
