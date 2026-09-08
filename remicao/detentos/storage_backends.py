@@ -4,6 +4,7 @@ from django.core.files.storage import Storage
 from django.conf import settings
 from django.utils.text import get_valid_filename
 from supabase import create_client
+from django.core.files.base import ContentFile
 
 
 class SupabaseStorage(Storage):
@@ -22,6 +23,10 @@ class SupabaseStorage(Storage):
         partes_limpas = [self._clean_segment(p) for p in partes if p]
         return '/'.join(partes_limpas)
 
+    def _open(self, name, mode='rb'):
+        conteudo = self.client.storage.from_(self.bucket).download(name)
+        return ContentFile(conteudo)
+  
     def _save(self, name, content):
         name = self._clean_name(name)
 
