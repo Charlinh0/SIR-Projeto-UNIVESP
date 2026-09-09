@@ -18,6 +18,12 @@
 
             <div class="card-body p-5">
                 <h2 class="card-title text-center mb-5">{{ detento.nome }}</h2>
+                {% if elegibilidade.mensagem %}
+                <div class="alert alert-warning" role="alert">
+                    <strong>⚠️ Atenção — Verificação de Elegibilidade:</strong><br>
+                    {{ elegibilidade.mensagem }}
+                </div>
+                {% endif %}
 
                 <!-- Grade dividindo as 5 informações dinamicamente (sem estourar o limite de 12) -->
                 <div class="row text-center mb-4">

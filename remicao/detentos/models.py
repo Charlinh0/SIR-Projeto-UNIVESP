@@ -24,6 +24,18 @@ class Detento(models.Model):
         error_messages={'blank': 'Atenção: Insira o regime do detento!',
                         'required': 'Atenção: Insira o regime do detento!'}
     )
+    TIPOS_CRIME = [
+        ('COMUM', 'Crime Comum'),
+        ('HEDIONDO_EQUIPARADO', 'Crime Hediondo ou Equiparado'),
+    ]
+
+    tipo_crime = models.CharField(
+        max_length=25,
+        choices=TIPOS_CRIME,
+        default='COMUM',
+        help_text="Classificação conforme a Lei nº 8.072/1990, para fins de "
+                   "verificação de elegibilidade e frações de progressão de regime."
+    )
 
     def __str__(self):
         return self.nome

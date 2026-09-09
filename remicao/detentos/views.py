@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Detento
 from django.contrib.auth.decorators import login_required
 from .forms import DocumentoForm
+from .services import verificar_elegibilidade_remicao
 
 
 # HOME (SEM login obrigatório)
@@ -99,6 +100,7 @@ def detalhe_detento(request, detento_id):
 
     dados_remicao = calcular_remicao(detento)
     documentos = detento.documentos.all().order_by('-data_envio')
+    elegibilidade = verificar_elegibilidade_remicao(detento)
 
     return render(request, "detentos/detalhe.html", {
         "detento": detento,
@@ -107,6 +109,7 @@ def detalhe_detento(request, detento_id):
         "pena_restante": dados_remicao['pena_restante'],
         "form": form,
         "documentos": documentos,
+        "elegibilidade": elegibilidade,
     })
 
 

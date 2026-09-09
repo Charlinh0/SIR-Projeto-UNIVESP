@@ -79,3 +79,33 @@ def _carregar_certificados_confiaveis():
     with open(caminho_p7b, 'rb') as f:
         certs_cryptography = pkcs7.load_der_pkcs7_certificates(f.read())
     return [asn1_x509.Certificate.load(c.public_bytes(Encoding.DER)) for c in certs_cryptography]
+
+def verificar_elegibilidade_remicao(detento):
+    """
+    Verifica se o tipo de crime do detento exige atenção especial quanto às
+    frações de progressão de regime, conforme a Lei nº 8.072/1990 (Lei dos
+    Crimes Hediondos). Retorna um dicionário com o resultado e uma mensagem
+    de alerta, quando aplicável.
+
+    Importante: o SIR calcula a remição de dias por estudo/trabalho/leitura
+    normalmente em todos os casos (conforme o art. 126 da LEP), pois a
+    remição em si não é vedada a crimes hediondos. O alerta serve para
+    lembrar o operador jurídico de que a FRAÇÃO DE CUMPRIMENTO DA PENA
+    (para fins de progressão de regime) é diferenciada nesses casos, e deve
+    ser conferida manualmente junto ao processo.
+    """
+    if detento.tipo_crime == 'HEDIONDO_EQUIPARADO':
+        return {
+            'elegivel_padrao': False,
+            'mensagem': (
+                f"Atenção: {detento.nome} está classificado como crime hediondo "
+                f"ou equiparado (Lei nº 8.072/1990). As frações de cumprimento "
+                f"de pena para progressão de regime são diferenciadas da regra "
+                f"geral da LEP. Confira o percentual aplicável junto ao processo "
+                f"antes de qualquer decisão sobre progressão."
+            ),
+        }
+    return {
+        'elegivel_padrao': True,
+        'mensagem': None,
+    }
