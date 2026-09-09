@@ -134,3 +134,6 @@ DEFAULT_FILE_STORAGE = 'detentos.storage_backends.SupabaseStorage'
 SUPABASE_URL = config('SUPABASE_URL')
 SUPABASE_KEY = config('SUPABASE_KEY')
 SUPABASE_BUCKET = config('SUPABASE_BUCKET')
+
+# Configurações de E-mail para envio de Comprovantes (Resend)
+RESEND_API_KEY = config('RESEND_API_KEY')

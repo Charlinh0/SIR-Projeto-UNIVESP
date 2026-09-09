@@ -18,10 +18,16 @@
 
             <div class="card-body p-5">
                 <h2 class="card-title text-center mb-5">{{ detento.nome }}</h2>
+
                 {% if elegibilidade.mensagem %}
                 <div class="alert alert-warning" role="alert">
                     <strong>⚠️ Atenção — Verificação de Elegibilidade:</strong><br>
                     {{ elegibilidade.mensagem }}
+                    <div class="mt-2">
+                        <a href="{% url 'notificar_elegibilidade' detento.id %}" class="btn btn-sm btn-dark">
+                            Notificar por E-mail
+                        </a>
+                    </div>
                 </div>
                 {% endif %}
 

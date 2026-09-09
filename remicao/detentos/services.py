@@ -6,6 +6,7 @@ import os
 from django.conf import settings
 from cryptography.hazmat.primitives.serialization import pkcs7, Encoding
 from asn1crypto import x509 as asn1_x509
+import resend
 
 
 def verificar_assinatura_pdf(caminho_ou_arquivo):
@@ -109,3 +110,30 @@ def verificar_elegibilidade_remicao(detento):
         'elegivel_padrao': True,
         'mensagem': None,
     }
+def enviar_notificacao_elegibilidade(detento, destinatario_email):
+    """
+    Envia um e-mail de alerta quando o detento está classificado como crime
+    hediondo/equiparado, notificando o operador jurídico responsável.
+    """
+    resend.api_key = settings.RESEND_API_KEY
+
+    try:
+        resend.Emails.send({
+            "from": "SIR <onboarding@resend.dev>",
+            "to": [destinatario_email],
+            "subject": f"[SIR] Atenção: verificação de elegibilidade — {detento.nome}",
+            "html": (
+                f"<p>O detento <strong>{detento.nome}</strong> "
+                f"(processo {detento.processo}) está classificado como "
+                f"crime hediondo ou equiparado (Lei nº 8.072/1990).</p>"
+                f"<p>As frações de cumprimento de pena para progressão de "
+                f"regime são diferenciadas da regra geral da LEP. Confira "
+                f"o percentual aplicável junto ao processo antes de "
+                f"qualquer decisão sobre progressão.</p>"
+                f"<p><em>Notificação automática do Sistema Integrado de Remição (SIR).</em></p>"
+            ),
+        })
+        return True
+    except Exception as e:
+        print(f"Erro ao enviar e-mail: {e}")
+        return False

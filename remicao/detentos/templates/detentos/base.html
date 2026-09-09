@@ -27,6 +27,13 @@
     </nav>
 
     <div class="container flex-grow-1 d-flex flex-column justify-content-center align-items-center my-4">
+        {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% block content %}
         {% endblock %}
     </div>

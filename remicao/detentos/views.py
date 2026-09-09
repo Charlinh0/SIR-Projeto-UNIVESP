@@ -3,7 +3,8 @@ from .models import Detento
 from django.contrib.auth.decorators import login_required
 from .forms import DocumentoForm
 from .services import verificar_elegibilidade_remicao
-
+from .services import enviar_notificacao_elegibilidade
+from django.contrib import messages
 
 # HOME (SEM login obrigatório)
 def home(request):
@@ -135,3 +136,14 @@ def consulta_detento(request):
             resultado = "Detento não encontrado."
 
     return render(request, "detentos/consulta.html", {"resultado": resultado})
+
+
+@login_required
+def notificar_elegibilidade(request, detento_id):
+    detento = get_object_or_404(Detento, pk=detento_id)
+    enviado = enviar_notificacao_elegibilidade(detento, 'space.ace.guitar@gmail.com')
+    if enviado:
+        messages.success(request, f"Notificação enviada com sucesso sobre {detento.nome}.")
+    else:
+        messages.error(request, "Falha ao enviar notificação. Tente novamente.")
+    return redirect('detalhe_detento', detento_id=detento.id)
