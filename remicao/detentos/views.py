@@ -5,6 +5,8 @@ from .forms import DocumentoForm
 from .services import verificar_elegibilidade_remicao
 from .services import enviar_notificacao_elegibilidade
 from django.contrib import messages
+from django.db.models import Count
+from .models import Advogado, SolicitacaoRemicao
 
 # HOME (SEM login obrigatório)
 def home(request):
@@ -147,3 +149,32 @@ def notificar_elegibilidade(request, detento_id):
     else:
         messages.error(request, "Falha ao enviar notificação. Tente novamente.")
     return redirect('detalhe_detento', detento_id=detento.id)
+
+
+@login_required
+def painel_advogados(request):
+    advogados = Advogado.objects.annotate(
+        total_detentos=Count('detentos_vinculados', distinct=True),
+        total_solicitacoes=Count('solicitacoes', distinct=True),
+    ).order_by('-total_detentos')
+
+    return render(request, "detentos/painel_advogados.html", {
+        "advogados": advogados,
+    })
+
+
+@login_required
+def detalhes_advogado(request, advogado_id):
+    advogado = get_object_or_404(Advogado, pk=advogado_id)
+    detentos = Detento.objects.filter(
+        advogado=advogado
+    ).order_by('-pena_total_dias')
+    solicitacoes = SolicitacaoRemicao.objects.filter(
+        advogado=advogado
+    ).select_related('detento')
+
+    return render(request, "detentos/detalhes_advogado.html", {
+        "advogado": advogado,
+        "detentos": detentos,
+        "solicitacoes": solicitacoes,
+    })

@@ -1,10 +1,9 @@
-from django.contrib import admin
-
 # Register your models here.
+
 from django.contrib import admin
 from .models import Detento, Atividade, Documento
+from .models import Advogado, SolicitacaoRemicao
 
-from django.contrib import admin
 
 # Altera o título da página e o cabeçalho
 admin.site.site_header = "Sistema de Remição de Pena"
@@ -25,3 +24,12 @@ class AtividadeAdmin(admin.ModelAdmin):
 class DocumentoAdmin(admin.ModelAdmin):
     list_display = ("detento", "tipo_documento", "estado_assinatura", "data_envio")
     list_filter = ("tipo_documento", "estado_assinatura")
+    
+@admin.register(Advogado)
+class AdvogadoAdmin(admin.ModelAdmin):
+    list_display = ("nome", "oab", "email")
+
+@admin.register(SolicitacaoRemicao)
+class SolicitacaoRemicaoAdmin(admin.ModelAdmin):
+    list_display = ("advogado", "detento", "status", "data_solicitacao")
+    list_filter = ("status",)

@@ -1,0 +1,78 @@
+{% extends 'detentos/base.html' %}
+
+{% block content %}
+<style>
+    .card-advogado {
+        transition: transform 500ms ease-out, border-color 500ms ease-out, box-shadow 500ms ease-out, background-color 500ms ease-out;
+        border: 1px solid #2a2a2a;
+        cursor: pointer;
+    }
+
+    .card-advogado:hover {
+        transition: transform 100ms ease-in, border-color 100ms ease-in, box-shadow 100ms ease-in, background-color 100ms ease-in;
+        transform: translateY(-8px) scale(1.01);
+        border-color: #0d6efd;
+        background-color: #0a1a3a;
+        box-shadow: 0 0 40px rgba(13, 110, 253, 0.5), 0 16px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .barra-fundo {
+        background-color: #1a1a1a;
+        border-radius: 4px;
+        height: 8px;
+        overflow: hidden;
+    }
+
+    .barra-preenchida {
+        background-color: #0dcaf0;
+        height: 100%;
+        transition: width 700ms ease-out;
+    }
+</style>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-11 col-lg-10">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Painel de Advogados</h2>
+            <a href="{% url 'lista_detentos' %}" class="btn btn-sm btn-outline-light">Voltar para Detentos</a>
+        </div>
+
+        {% if advogados %}
+        <div class="d-flex flex-column gap-3">
+            {% for advogado in advogados %}
+            <a href="{% url 'detalhes_advogado' advogado.id %}" class="text-decoration-none text-reset">
+                <div class="card card-advogado bg-dark p-3">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div>
+                            <h5 class="mb-1">{{ advogado.nome }}</h5>
+                            <p class="text-muted small mb-0">OAB {{ advogado.oab }}</p>
+                        </div>
+
+                        <div style="min-width: 200px;">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>Detentos vinculados</span>
+                                <strong>{{ advogado.total_detentos }}</strong>
+                            </div>
+                            <div class="barra-fundo">
+                                <div class="barra-preenchida"
+                                    style="width: {% widthratio advogado.total_detentos 10 100 %}%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="text-end">
+                            <p class="text-muted small mb-0">Solicitações registradas</p>
+                            <h5 class="mb-0">{{ advogado.total_solicitacoes }}</h5>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">Nenhum advogado cadastrado ainda.</p>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

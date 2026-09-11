@@ -36,7 +36,8 @@
                         <td class="text-success fw-bold">{{ item.dias_remidos }} dias</td>
                         <td class="text-danger fw-bold">{{ item.pena_restante }} dias</td>
                         <td class="text-center">
-                            <a href="{% url 'detalhe_detento' item.detento.id %}" class="btn btn-outline-info btn-sm">
+                            <a href="{% url 'detalhe_detento' item.detento.id %}"
+                                class="btn btn-outline-primary btn-sm">
                                 Ver Detalhes
                             </a>
                         </td>

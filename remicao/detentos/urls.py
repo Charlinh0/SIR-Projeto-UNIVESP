@@ -14,4 +14,6 @@ urlpatterns = [
     path("detento/<int:detento_id>/", views.detalhe_detento, name="detalhe_detento"),
     path("detento/<int:detento_id>/notificar/", views.notificar_elegibilidade, name="notificar_elegibilidade"),
     path("consulta/", views.consulta_detento, name="consulta_detento"),
+    path("advogados/", views.painel_advogados, name="painel_advogados"),
+    path("advogados/<int:advogado_id>/", views.detalhes_advogado, name="detalhes_advogado"),
 ]

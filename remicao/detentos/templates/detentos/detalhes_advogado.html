@@ -1,0 +1,64 @@
+{% extends 'detentos/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-11 col-lg-10">
+
+        <div class="card shadow-sm border-primary">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">{{ advogado.nome }}</h4>
+                <a href="{% url 'painel_advogados' %}" class="btn btn-sm btn-light shadow-sm">
+                    Voltar para o Painel
+                </a>
+            </div>
+
+            <div class="card-body p-5">
+                <p class="text-muted mb-4">
+                    OAB {{ advogado.oab }}
+                    {% if advogado.email %}— {{ advogado.email }}{% endif %}
+                </p>
+
+                <h5 class="mb-3">Detentos Vinculados ({{ detentos|length }})</h5>
+                {% if detentos %}
+                <ul class="list-group mb-4">
+                    {% for detento in detentos %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a href="{% url 'detalhe_detento' detento.id %}" class="text-decoration-none">
+                            {{ detento.nome }}
+                        </a>
+                        <span class="text-muted small">Processo {{ detento.processo }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">Nenhum detento vinculado.</p>
+                {% endif %}
+
+                <h5 class="mb-3">Histórico de Solicitações ({{ solicitacoes|length }})</h5>
+                {% if solicitacoes %}
+                <ul class="list-group">
+                    {% for sol in solicitacoes %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                            {{ sol.detento.nome }}
+                            <small class="text-muted">— {{ sol.data_solicitacao|date:"d/m/Y H:i" }}</small>
+                        </span>
+                        {% if sol.status == 'DEFERIDA' %}
+                        <span class="badge bg-success">Deferida</span>
+                        {% elif sol.status == 'INDEFERIDA' %}
+                        <span class="badge bg-danger">Indeferida</span>
+                        {% else %}
+                        <span class="badge bg-warning text-dark">Pendente</span>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">Nenhuma solicitação registrada.</p>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -6,10 +6,10 @@
     <div class="col-md-11 col-lg-10">
 
         <!-- Cartão Principal da Ficha -->
-        <div class="card shadow-sm border-info">
+        <div class="card shadow-sm border-primary">
 
             <!-- Cabeçalho Azul com botão de voltar -->
-            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Ficha do Detento</h4>
                 <a href="{% url 'lista_detentos' %}" class="btn btn-sm btn-light shadow-sm">
                     Voltar para a Lista
@@ -83,6 +83,8 @@
                             <span class="badge bg-success">Assinatura Válida</span>
                             {% elif doc.estado_assinatura == 'INVALIDO' %}
                             <span class="badge bg-danger">Assinatura Inválida</span>
+                            {% elif doc.estado_assinatura == 'PENDENTE' %}
+                            <span class="badge bg-warning text-dark">Verificação Pendente</span>
                             {% else %}
                             <span class="badge bg-secondary">Sem Assinatura</span>
                             {% endif %}
@@ -106,7 +108,7 @@
                             </div>
                         </div>
                         <div class="mt-3">
-                            <button type="submit" class="btn btn-info px-4">Enviar Documento</button>
+                            <button type="submit" class="btn btn-primary px-4">Enviar Documento</button>
                         </div>
                     </form>
                 </div>
