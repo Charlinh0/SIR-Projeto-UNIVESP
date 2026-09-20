@@ -1,0 +1,25 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=chave-so-para-teste-local-docker
+      - DEBUG=True
+      - DATABASE_URL=postgresql://sir_user:sir_senha@db:5432/sir_db
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=sir_user
+      - POSTGRES_PASSWORD=sir_senha
+      - POSTGRES_DB=sir_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - dados_postgres:/var/lib/postgresql/data
+
+volumes:
+  dados_postgres:
