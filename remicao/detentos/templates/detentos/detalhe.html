@@ -66,36 +66,39 @@
 
                 <!-- Tabela de conversão: quanto cada atividade reduz da pena -->
                 <div class="mb-4">
-                    <h3 class="h6 text-uppercase text-body-secondary mb-2">Como a remição é calculada</h3>
+                    <h3 class="h6 text-uppercase text-body-secondary mb-2">
+                        Como a remição é calculada
+                    </h3>
                     <table class="table table-sm table-bordered align-middle mb-0">
                         <caption class="visually-hidden">
-                            Regras de conversão de atividades em dias remidos e totais registrados para este detento
+                            Regras de conversão de atividades em dias remidos
                         </caption>
                         <thead>
                             <tr>
                                 <th scope="col">Atividade</th>
                                 <th scope="col">Regra de conversão</th>
-                                <th scope="col">Registrado neste detento</th>
+                                <th scope="col">Registrado</th>
+                                <th scope="col">Dias remidos</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <th scope="row">Trabalho</th>
                                 <td>3 dias trabalhados = 1 dia remido</td>
-                                <td>{{ dados_remicao.total_dias_trabalhados }} dias → {{
-                                    dados_remicao.dias_remidos_trabalho }} dia(s) remido(s)</td>
+                                <td>{{ dados_remicao.total_dias_trabalhados }} dias</td>
+                                <td>{{ dados_remicao.dias_remidos_trabalho }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">Estudo</th>
                                 <td>12 horas de estudo = 1 dia remido</td>
-                                <td>{{ dados_remicao.total_horas_estudo }} horas → {{ dados_remicao.dias_remidos_estudo
-                                    }} dia(s) remido(s)</td>
+                                <td>{{ dados_remicao.total_horas_estudo }} horas</td>
+                                <td>{{ dados_remicao.dias_remidos_estudo }}</td>
                             </tr>
                             <tr>
                                 <th scope="row">Leitura</th>
                                 <td>1 livro lido = 4 dias remidos</td>
-                                <td>{{ dados_remicao.total_livros_lidos }} livro(s) → {{
-                                    dados_remicao.dias_remidos_leitura }} dia(s) remido(s)</td>
+                                <td>{{ dados_remicao.total_livros_lidos }} livro(s)</td>
+                                <td>{{ dados_remicao.dias_remidos_leitura }}</td>
                             </tr>
                         </tbody>
                     </table>
