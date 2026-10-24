@@ -8,9 +8,9 @@
         <!-- Cartão Principal da Ficha -->
         <div class="card shadow-sm border-primary">
 
-            <!-- Cabeçalho Azul com botão de voltar -->
+            <!-- Cabeçalho com botão de voltar -->
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Ficha do Detento</h4>
+                <h1 class="h4 mb-0">Ficha do Detento</h1>
                 <a href="{% url 'lista_detentos' %}" class="btn btn-sm btn-light shadow-sm">
                     Voltar para a Lista
                 </a>
@@ -20,56 +20,91 @@
                 <h2 class="card-title text-center mb-5">{{ detento.nome }}</h2>
 
                 {% if elegibilidade.mensagem %}
-                <div class="alert alert-warning" role="alert">
-                    <strong>⚠️ Atenção — Verificação de Elegibilidade:</strong><br>
-                    {{ elegibilidade.mensagem }}
-                    <div class="mt-2">
-                        <a href="{% url 'notificar_elegibilidade' detento.id %}" class="btn btn-sm btn-dark">
-                            Notificar por E-mail
-                        </a>
-                    </div>
+                <div class="alert alert-danger border border-2 border-danger mb-4" role="alert">
+                    <p class="h5 alert-heading">⚠️ Crime hediondo ou equiparado — atenção à progressão de regime</p>
+                    <p class="mb-2">{{ elegibilidade.mensagem }}</p>
+                    <a href="{% url 'notificar_elegibilidade' detento.id %}" class="btn btn-sm btn-light">
+                        Notificar por E-mail
+                    </a>
                 </div>
                 {% endif %}
 
-                <!-- Grade dividindo as 5 informações dinamicamente (sem estourar o limite de 12) -->
+                <!-- Grade de informações da ficha -->
                 <div class="row text-center mb-4">
 
                     <div class="col-md mb-3">
                         <p class="text-muted mb-1">Nº do Processo</p>
-                        <h5>{{ detento.processo }}</h5>
+                        <p class="h5">{{ detento.processo }}</p>
                     </div>
 
                     <div class="col-md mb-3">
                         <p class="text-muted mb-1">Regime</p>
-                        <h5 class="text-primary">{{ detento.get_regime_display }}</h5>
+                        <p class="h5 text-primary-emphasis">{{ detento.get_regime_display }}</p>
                     </div>
 
                     <div class="col-md mb-3">
                         <p class="text-muted mb-1">Pena Total</p>
-                        <h5>{{ detento.pena_total_dias }} dias</h5>
+                        <p class="h5">{{ detento.pena_total_dias }} dias</p>
                     </div>
 
                     <div class="col-md mb-3">
                         <p class="text-muted mb-1">Dias Já Cumpridos (informado)</p>
-                        <h5 class="text-info fw-bold">{{ dados_remicao.dias_cumpridos_informados }}</h5>
+                        <p class="h5 text-info fw-bold">{{ dados_remicao.dias_cumpridos_informados }}</p>
                     </div>
 
                     <div class="col-md mb-3">
                         <p class="text-muted mb-1">Dias Remidos (SIR)</p>
-                        <h5 class="text-success fw-bold">+ {{ dias_remidos }}</h5>
+                        <p class="h5 text-success-emphasis fw-bold">+ {{ dias_remidos }}</p>
                     </div>
 
                     <div class="col-md mb-3">
                         <p class="text-muted mb-1">Pena Restante</p>
-                        <h5 class="text-danger fw-bold">{{ pena_restante }} dias</h5>
+                        <p class="h5 text-danger-emphasis fw-bold">{{ pena_restante }} dias</p>
                     </div>
 
+                </div>
+
+                <!-- Tabela de conversão: quanto cada atividade reduz da pena -->
+                <div class="mb-4">
+                    <h3 class="h6 text-uppercase text-body-secondary mb-2">Como a remição é calculada</h3>
+                    <table class="table table-sm table-bordered align-middle mb-0">
+                        <caption class="visually-hidden">
+                            Regras de conversão de atividades em dias remidos e totais registrados para este detento
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Atividade</th>
+                                <th scope="col">Regra de conversão</th>
+                                <th scope="col">Registrado neste detento</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Trabalho</th>
+                                <td>3 dias trabalhados = 1 dia remido</td>
+                                <td>{{ dados_remicao.total_dias_trabalhados }} dias → {{
+                                    dados_remicao.dias_remidos_trabalho }} dia(s) remido(s)</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Estudo</th>
+                                <td>12 horas de estudo = 1 dia remido</td>
+                                <td>{{ dados_remicao.total_horas_estudo }} horas → {{ dados_remicao.dias_remidos_estudo
+                                    }} dia(s) remido(s)</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Leitura</th>
+                                <td>1 livro lido = 4 dias remidos</td>
+                                <td>{{ dados_remicao.total_livros_lidos }} livro(s) → {{
+                                    dados_remicao.dias_remidos_leitura }} dia(s) remido(s)</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 <hr class="text-muted">
 
                 <div class="mt-4">
-                    <h5 class="mb-3">Documentos Comprobatórios</h5>
+                    <h3 class="h5 mb-3">Documentos Comprobatórios</h3>
 
                     {% if documentos %}
                     <ul class="list-group mb-4">
@@ -99,11 +134,13 @@
                         {% csrf_token %}
                         <div class="row g-2">
                             <div class="col-md-6">
-                                <label class="form-label">Tipo de Documento</label>
+                                <label class="form-label" for="{{ form.tipo_documento.id_for_label }}">Tipo de
+                                    Documento</label>
                                 {{ form.tipo_documento }}
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Arquivo (PDF)</label>
+                                <label class="form-label" for="{{ form.arquivo.id_for_label }}">Arquivo (PDF, JPG ou
+                                    PNG)</label>
                                 {{ form.arquivo }}
                             </div>
                         </div>
@@ -121,8 +158,8 @@
 
     </div>
 </div>
+{% endblock %}
 
 {% block extra_js %}
 <script src="{% static 'detentos/js/validacao_documento.js' %}"></script>
-{% endblock %}
 {% endblock %}

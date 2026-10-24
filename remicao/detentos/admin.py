@@ -1,8 +1,7 @@
 # Register your models here.
 
 from django.contrib import admin
-from .models import Detento, Atividade, Documento
-from .models import Advogado, SolicitacaoRemicao
+from .models import Detento, Atividade, Documento, Advogado, SolicitacaoRemicao
 
 
 # Altera o título da página e o cabeçalho
