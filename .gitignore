@@ -3,3 +3,5 @@ venv.old/
 __pycache__/
 *.pyc
 .env
+remicao/test_media/
+pyrefly.toml
