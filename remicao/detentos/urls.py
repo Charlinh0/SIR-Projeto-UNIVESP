@@ -16,4 +16,5 @@ urlpatterns = [
     path("consulta/", views.consulta_detento, name="consulta_detento"),
     path("advogados/", views.painel_advogados, name="painel_advogados"),
     path("advogados/<int:advogado_id>/", views.detalhes_advogado, name="detalhes_advogado"),
+    path('documento/<int:documento_id>/verificar/', views.reverificar_documento, name='reverificar_documento'),
 ]

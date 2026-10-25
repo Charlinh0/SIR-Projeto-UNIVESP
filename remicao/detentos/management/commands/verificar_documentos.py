@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from detentos.models import Documento
-from detentos.services import verificar_assinatura_pdf
+from detentos.services import verificar_documento
 
 
 class Command(BaseCommand):
@@ -13,16 +13,11 @@ class Command(BaseCommand):
         self.stdout.write(f"Encontrados {total} documento(s) pendente(s).")
 
         for documento in pendentes:
-            documento.arquivo.open('rb')
-            estado, nome_assinante = verificar_assinatura_pdf(documento.arquivo)
-            documento.arquivo.close()
-
-            documento.estado_assinatura = estado
-            documento.save()
-
+            estado, nome_assinante = verificar_documento(documento)
             self.stdout.write(
                 f"Documento #{documento.id} ({documento.tipo_documento}): "
                 f"{estado} - Assinante: {nome_assinante or 'N/A'}"
             )
 
         self.stdout.write(self.style.SUCCESS('Verificação concluída.'))
+        

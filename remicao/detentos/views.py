@@ -7,6 +7,11 @@ from .services import enviar_notificacao_elegibilidade
 from django.contrib import messages
 from django.db.models import Count
 from .models import Advogado, SolicitacaoRemicao
+from django.db import transaction
+from django.views.decorators.http import require_POST
+from .models import Documento
+from .services import iniciar_verificacao, verificar_documento
+
 
 # HOME (SEM login obrigatório)
 def home(request):
@@ -63,7 +68,6 @@ def calcular_remicao(detento):
         'dias_cumpridos_informados': detento.dias_cumpridos_informados,
         'pena_restante': pena_restante,
     }
-    
 
 
 # VIEW lista
@@ -97,6 +101,8 @@ def detalhe_detento(request, detento_id):
             documento = form.save(commit=False)
             documento.detento = detento
             documento.save()
+            transaction.on_commit(lambda: iniciar_verificacao(documento.id))
+            messages.info(request, "Documento enviado. A verificação da assinatura está em andamento.")
             return redirect('detalhe_detento', detento_id=detento.id)
     else:
         form = DocumentoForm()
@@ -178,3 +184,16 @@ def detalhes_advogado(request, advogado_id):
         "detentos": detentos,
         "solicitacoes": solicitacoes,
     })
+
+
+@login_required
+@require_POST
+def reverificar_documento(request, documento_id):
+    documento = get_object_or_404(Documento, pk=documento_id)
+    verificar_documento(documento)
+    messages.success(
+        request,
+        f"Documento verificado: {documento.get_estado_assinatura_display()}."
+    )
+    return redirect('detalhe_detento', detento_id=documento.detento_id)
+    

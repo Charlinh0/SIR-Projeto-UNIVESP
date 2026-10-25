@@ -1,9 +1,15 @@
-from django.test import TestCase
+from datetime import date
+from unittest import mock
+
+from django.contrib.auth.models import User
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models import Count
+from django.test import TestCase
+from django.urls import reverse
+
 from .models import Detento, Atividade, Documento, Advogado, SolicitacaoRemicao
+from .services import verificar_elegibilidade_remicao, verificar_documento
 from .views import calcular_remicao
-from .services import verificar_elegibilidade_remicao
 
 
 class CalculoRemicaoTestCase(TestCase):
@@ -96,3 +102,36 @@ class PainelAdvogadosTestCase(TestCase):
 
         self.assertEqual(resultado.total_detentos, 2)
         self.assertEqual(resultado.total_solicitacoes, 1)
+
+
+class VerificacaoAutomaticaTests(TestCase):
+    def setUp(self):
+        User.objects.create_user('tester', password='x')
+        self.client.login(username='tester', password='x')
+        self.detento = Detento.objects.create(
+            nome='Fulano de Tal', processo='0001', pena_total_dias=1000,
+            data_inicio=date(2024, 1, 1), regime='FECHADO',
+        )
+
+    def test_upload_dispara_verificacao_em_segundo_plano(self):
+        arquivo = SimpleUploadedFile(
+            'atestado.pdf', b'%PDF-1.4 conteudo', content_type='application/pdf'
+        )
+        with mock.patch('detentos.views.iniciar_verificacao') as disparo:
+            with self.captureOnCommitCallbacks(execute=True):
+                self.client.post(
+                    reverse('detalhe_detento', args=[self.detento.id]),
+                    {'tipo_documento': 'ATESTADO_ESTUDO', 'arquivo': arquivo},
+                )
+        documento = Documento.objects.get()
+        disparo.assert_called_once_with(documento.id)
+
+    def test_verificar_documento_atualiza_o_estado(self):
+        documento = Documento.objects.create(
+            detento=self.detento, tipo_documento='ATESTADO_ESTUDO',
+            arquivo=SimpleUploadedFile('x.pdf', b'nao e um pdf'),
+        )
+        self.assertEqual(documento.estado_assinatura, 'PENDENTE')
+        verificar_documento(documento)
+        documento.refresh_from_db()
+        self.assertEqual(documento.estado_assinatura, 'SEM_ASSINATURA')

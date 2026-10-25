@@ -7,7 +7,8 @@ from django.conf import settings
 from cryptography.hazmat.primitives.serialization import pkcs7, Encoding
 from asn1crypto import x509 as asn1_x509
 import resend
-
+import threading
+from django.db import connection
 
 def verificar_assinatura_pdf(caminho_ou_arquivo):
     """
@@ -80,6 +81,43 @@ def _carregar_certificados_confiaveis():
     with open(caminho_p7b, 'rb') as f:
         certs_cryptography = pkcs7.load_der_pkcs7_certificates(f.read())
     return [asn1_x509.Certificate.load(c.public_bytes(Encoding.DER)) for c in certs_cryptography]
+
+def verificar_documento(documento):
+    """
+    Verifica a assinatura de um Documento já salvo e grava o resultado.
+    Usada pelo disparo automático, pelo botão 'Verificar agora' e pelo comando.
+    """
+    documento.arquivo.open('rb')
+    try:
+        estado, nome_assinante = verificar_assinatura_pdf(documento.arquivo)
+    finally:
+        documento.arquivo.close()
+
+    documento.estado_assinatura = estado
+    documento.save(update_fields=['estado_assinatura'])
+    return estado, nome_assinante
+
+
+def _executar_em_segundo_plano(documento_id):
+    from .models import Documento
+    try:
+        documento = Documento.objects.get(pk=documento_id)
+        verificar_documento(documento)
+    except Exception as e:
+        # Se algo falhar, o documento continua PENDENTE e pode ser
+        # verificado depois pelo botão ou pelo comando.
+        print(f"Erro na verificação em segundo plano: {e}")
+    finally:
+        connection.close()
+
+
+def iniciar_verificacao(documento_id):
+    """Dispara a verificação sem fazer o usuário esperar a resposta."""
+    threading.Thread(
+        target=_executar_em_segundo_plano,
+        args=(documento_id,),
+        daemon=True,
+    ).start()
 
 def verificar_elegibilidade_remicao(detento):
     """

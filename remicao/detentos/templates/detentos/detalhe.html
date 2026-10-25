@@ -122,7 +122,16 @@
                             {% elif doc.estado_assinatura == 'INVALIDO' %}
                             <span class="badge bg-danger">Assinatura Inválida</span>
                             {% elif doc.estado_assinatura == 'PENDENTE' %}
-                            <span class="badge bg-warning text-dark">Verificação Pendente</span>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-warning text-dark">Verificação Pendente</span>
+                                <form method="post" action="{% url 'reverificar_documento' doc.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-warning ms-2"
+                                        aria-label="Verificar assinatura do documento {{ doc.id }}">
+                                        Verificar agora
+                                    </button>
+                                </form>
+                            </div>
                             {% else %}
                             <span class="badge bg-secondary">Sem Assinatura</span>
                             {% endif %}
